@@ -1,0 +1,28 @@
+.
+├── cmd
+├── domain
+│   └── user
+│       ├── usecase.go
+│       └── user.go
+├── go.mod
+├── go.sum
+├── infrastucture
+│   ├── handler
+│   │   ├── response
+│   │   │   └── message.go
+│   │   └── user
+│   │       └── handler.go
+│   ├── postgres
+│   │   ├── postgresql.go
+│   │   └── user
+│   │       └── user.go
+│   └── response
+├── lista.txt
+├── main.go
+├── model
+│   ├── error.go
+│   ├── messageresponse.go
+│   └── user.go
+└── sqlmigrations
+
+13 directories, 13 files
