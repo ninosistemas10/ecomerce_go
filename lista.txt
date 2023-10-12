@@ -1,17 +1,25 @@
 .
 ├── cmd
+│   ├── database.go
+│   ├── environment.go
+│   ├── fiber.go
+│   └── main.go
 ├── domain
 │   └── user
 │       ├── usecase.go
 │       └── user.go
 ├── go.mod
 ├── go.sum
-├── infrastucture
+├── infrastructure
 │   ├── handler
+│   │   ├── middle
+│   │   │   └── autentication.go
 │   │   ├── response
 │   │   │   └── message.go
+│   │   ├── routes.go
 │   │   └── user
-│   │       └── handler.go
+│   │       ├── handler.go
+│   │       └── route.go
 │   ├── postgres
 │   │   ├── postgresql.go
 │   │   └── user
@@ -21,8 +29,10 @@
 ├── main.go
 ├── model
 │   ├── error.go
+│   ├── jwtcustomclaims.go
 │   ├── messageresponse.go
 │   └── user.go
 └── sqlmigrations
 
-13 directories, 13 files
+14 directories, 21 files
+tree > lista.txt

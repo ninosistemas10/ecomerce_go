@@ -18,7 +18,7 @@ func New(s Storage) User {
 }
 
 // User es el dominio
-func (u User) CreateUsuario(m *model.User) error {
+func (u User) Create(m *model.User) error {
 	ID, err := uuid.NewUUID()
 	if err != nil {
 		return fmt.Errorf("%s %w", "uuid.NewUUID", err)
@@ -58,7 +58,7 @@ func (u User) GetByID(ID uuid.UUID) (model.User, error) {
 	return user, nil
 }
 
-func (u User) GetByEmaill(email string) (model.User, error) {
+func (u User) GetByEmail(email string) (model.User, error) {
 	users, err := u.storage.GetByEmail(email)
 	if err != nil {
 		return model.User{}, fmt.Errorf("%s %w", "storage.GetByEmail", err)
@@ -76,7 +76,7 @@ func (u User) GetAll() (model.Users, error) {
 }
 
 func (u User) Login(email, password string) (model.User, error) {
-	m, err := u.GetByEmaill(email)
+	m, err := u.GetByEmail(email)
 	if err != nil {
 		return model.User{}, fmt.Errorf("%s %w", "user.GetByEmail()", err)
 	}

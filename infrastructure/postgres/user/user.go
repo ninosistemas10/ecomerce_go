@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ninosistemas10/ecommerce/infrastucture/postgres"
+	"github.com/ninosistemas10/ecommerce/infrastructure/postgres"
 	"github.com/ninosistemas10/ecommerce/model"
 )
 
@@ -51,6 +52,17 @@ func (u User) Create(m *model.User) error {
 		return err
 	}
 	return nil
+}
+
+func (u User) GetByID(ID uuid.UUID) (model.User, error) {
+	query := psqlGetAll + " WHERE id = $1"
+	row := u.db.QueryRow(
+		context.Background(),
+		query,
+		ID,
+	)
+
+	return u.scanRow(row, false)
 }
 
 func (u User) GetByEmail(email string) (model.User, error) {

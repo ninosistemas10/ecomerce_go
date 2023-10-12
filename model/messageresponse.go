@@ -10,5 +10,5 @@ type Responses []Response
 type MessageResponse struct {
 	Data    interface{}  	`json:"data"`
 	Errors	Responses		`json:"errors"`
-	Message	Responses		`json:"messages"`
+	Messages	Responses		`json:"messages"`
 }

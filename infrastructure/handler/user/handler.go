@@ -1,4 +1,4 @@
-package handler
+package user
 
 import (
 	"errors"
@@ -6,7 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/ninosistemas10/ecommerce/domain/user"
-	"github.com/ninosistemas10/ecommerce/infrastucture/handler/response"
+	"github.com/ninosistemas10/ecommerce/infrastructure/handler/response"
+
 	"github.com/ninosistemas10/ecommerce/model"
 )
 
