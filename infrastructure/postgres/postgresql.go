@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"bytes"
+	"database/sql"
 	"fmt"
 )
 
@@ -28,6 +29,33 @@ func BuildSQLInsert(table string, fields []string) string {
 	return fmt.Sprintf("INSERT INTO %s(%s) VALUES (%s)", table, args.String(), values.String())
 }
 
+func BuildSQLUpdateByID(table string, fields []string) string {
+	if len(fields) == 0 {
+		return ErrFieldAreEmpty
+	}
+
+	// Move ID field to latest.
+	fields = append(fields[1:], fields[0])
+	args := bytes.Buffer{}
+	k := 0
+	for _, v := range fields {
+		if v == "created_at" {
+			continue
+		}
+		args.WriteString(fmt.Sprintf("%s = $%d, ", v, k+1))
+		k++
+	}
+	args.Truncate(args.Len() - 2)
+
+	return fmt.Sprintf("UPDATE %s SET %s WHERE id = $%d", table, args.String(), k)
+}
+
+
+func BuildSQLDelete(table string) string {
+	return fmt.Sprintf("DELETE FROM %s WHERE id = $1", table)
+}
+
+
 func BuildSQLSelect(table string, fields []string) string {
 	if len(fields) == 0 {
 		return ErrFieldAreEmpty
@@ -42,3 +70,13 @@ func BuildSQLSelect(table string, fields []string) string {
 	args.Truncate(args.Len() - 2)
 	return fmt.Sprintf("SELECT %s FROM %s", args.String(), table)
 }
+
+func Int64ToNull(d int64) sql.NullInt64 {
+	r := sql.NullInt64{Int64: d}
+	if d > 0 {
+		r.Valid = true
+	}
+
+	return r
+}
+

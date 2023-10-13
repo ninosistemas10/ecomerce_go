@@ -8,8 +8,8 @@ import (
 
 type User struct {
 	ID       uuid.UUID       `json:"id"`
-	Email    string          `json:"email"`
 	Nombre   string          `json:"nombre"`
+	Email    string          `json:"email"`
 	Password string          `json:"password"`
 	IsAdmin  bool            `json:"is_admin"`
 	Details  json.RawMessage `json:"details"`

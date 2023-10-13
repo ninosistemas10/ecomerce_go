@@ -15,6 +15,7 @@ const table = "users"
 
 var fields = []string{
 	"id",
+	"nombre",
 	"email",
 	"password",
 	"is_admin",
@@ -46,7 +47,7 @@ func (u User) Create(m *model.User) error {
 		m.IsAdmin,
 		m.Details,
 		m.CreateAt,
-		//postgres.Int64toNull(m.UpdateAt),
+		postgres.Int64ToNull(m.UpdateAt),
 	)
 	if err != nil {
 		return err

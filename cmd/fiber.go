@@ -10,23 +10,24 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
-func newHTTP() *fiber.App {
-	app := fiber.New(fiber.Config{
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			// tu manejador de errores aquí
-			return ctx.Status(500).SendString(err.Error())
-		},
-	})
+func newHTTP(errorHandler func(*fiber.Ctx, error)) *fiber.App {
+	app := fiber.New()
 
 	app.Use(logger.New())
 	app.Use(recover.New())
 
-	corsConfig := cors.Config{
-		AllowOrigins: strings.Join(strings.Split(os.Getenv("ALLOWED_ORIGINS"), ","), ","),
-		AllowMethods: strings.Join(strings.Split(os.Getenv("ALLOWED_METHODS"), ","), ","),
-	}
+	// Obtén los valores de entorno y conviértelos a slices de strings
+	allowedOrigins := strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
+	allowedOriginsString := strings.Join(allowedOrigins, ",")
 
-	app.Use(cors.New(corsConfig))
+	corsConfig := cors.New(cors.Config{
+      	AllowOrigins: allowedOriginsString,  // Convierte el slice a una cadena
+      	AllowMethods: strings.Join(strings.Split(os.Getenv("ALLOWED_METHODS"), ","), ","),
+    	})
+
+	app.Use(corsConfig)
+
+	app.Use(errorHandler)
 
 	return app
 }

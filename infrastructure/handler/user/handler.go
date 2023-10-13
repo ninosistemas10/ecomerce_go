@@ -26,7 +26,7 @@ func (h handler) Create(c *fiber.Ctx) error {
 		return h.responser.BindFailed(err)
 	}
 	if err := h.useCase.Create(&m); err != nil {
-		return h.responser.Error(c, "useCase.Create()", errors.New("Couldn't parse the ID"))
+		return h.responser.Error(c, "useCase.Create()", err)
 	}
 
 	status, response := h.responser.Created(m)
@@ -36,7 +36,7 @@ func (h handler) Create(c *fiber.Ctx) error {
 func (h handler) MySelf(c *fiber.Ctx) error {
 	ID, ok := c.Locals("userID").(uuid.UUID)
 	if !ok {
-		return h.responser.Error(c, "", errors.New("Couldn't parese the ID"))
+		return h.responser.Error(c, "c.Locals(userID)", errors.New("Couldn't parese the ID"))
 	}
 
 	u, err := h.useCase.GetByID(ID)

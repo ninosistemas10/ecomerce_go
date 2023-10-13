@@ -6,6 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/login"
+	"github.com/ninosistemas10/ecommerce/infrastructure/handler/product"
+	purchaseorder "github.com/ninosistemas10/ecommerce/infrastructure/handler/purchaseOrder"
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/user"
 )
 
@@ -22,10 +24,12 @@ func InitRoutes(app *fiber.App, dbPool *pgxpool.Pool) {
 
 
 	// L
+	//login.NewRouter(app, dbPool)
 	login.NewRouter(app, dbPool)
 
 	// P
-
+	product.NewRouter(app, dbPool)
+	purchaseorder.NewRouter(app, dbPool)
 
 	// U
 	user.NewRouter(app, dbPool)

@@ -28,28 +28,28 @@ func New() API {
 func (a API) OK(data interface{}) (int, model.MessageResponse) {
 	return http.StatusOK, model.MessageResponse{
 		Data:    data,
-		Message: model.Responses{{Code: Ok, Message: "!listo¡"}},
+		Messages: model.Responses{{Code: Ok, Message: "!listo¡"}},
 	}
 }
 
 func (a API) Created(data interface{}) (int, model.MessageResponse) {
 	return http.StatusCreated, model.MessageResponse{
 		Data:    data,
-		Message: model.Responses{{Code: RecordCreated, Message: "!listo¡"}},
+		Messages: model.Responses{{Code: RecordCreated, Message: "!listo¡"}},
 	}
 }
 
 func (a API) Update(data interface{}) (int, model.MessageResponse) {
 	return http.StatusOK, model.MessageResponse{
 		Data:    data,
-		Message: model.Responses{{Code: RecordUpdated, Message: "!listo¡"}},
+		Messages: model.Responses{{Code: RecordUpdated, Message: "!listo¡"}},
 	}
 }
 
 func (a API) Delete(data interface{}) (int, model.MessageResponse) {
 	return http.StatusOK, model.MessageResponse{
 		Data:    data,
-		Message: model.Responses{{Code: RecordDeleted, Message: "!listo¡"}},
+		Messages: model.Responses{{Code: RecordDeleted, Message: "!listo¡"}},
 	}
 }
 
