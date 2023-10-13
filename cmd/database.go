@@ -54,6 +54,7 @@ func newDBConnection() (*pgxpool.Pool, error) {
 
 	config.ConnConfig.RuntimeParams["application_name"] = AppName
 
+
 	pool, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
 		return nil, fmt.Errorf("%s %w", "pgxpool.NewWithConfig()", err)

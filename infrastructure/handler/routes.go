@@ -1,46 +1,52 @@
 package handler
 
 import (
+	"net/http"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/labstack/echo/v4"
+
+	//"github.com/ninosistemas10/ecommerce/infrastructure/handler/invoice"
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/login"
+
+	//"github.com/ninosistemas10/ecommerce/infrastructure/handler/paypal"
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/product"
-	purchaseorder "github.com/ninosistemas10/ecommerce/infrastructure/handler/purchaseOrder"
+	//"github.com/ninosistemas10/ecommerce/infrastructure/handler/purchaseorder"
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/user"
 )
 
-
-
-func InitRoutes(app *fiber.App, dbPool *pgxpool.Pool) {
-	health(app)
+func InitRoutes(e *echo.Echo, dbPool *pgxpool.Pool) {
+	health(e)
 
 	// A
 	// B
 	// C
 
 	// I
-
+	//invoice.NewRouter(e, dbPool)
 
 	// L
-	//login.NewRouter(app, dbPool)
-	login.NewRouter(app, dbPool)
+	login.NewRouter(e, dbPool)
 
 	// P
-	product.NewRouter(app, dbPool)
-	purchaseorder.NewRouter(app, dbPool)
+	//paypal.NewRouter(e, dbPool)
+	product.NewRouter(e, dbPool)
+	//purchaseorder.NewRouter(e, dbPool)
 
 	// U
-	user.NewRouter(app, dbPool)
+	user.NewRouter(e, dbPool)
 }
 
-func health(app *fiber.App) {
-	app.Get("/health", func(c *fiber.Ctx) error {
-		return c.JSON(map[string]interface{}{
-			"time":         time.Now().String(),
-			"message":      "Hello World!",
-			"service_name": "",
-		})
+func health(e *echo.Echo) {
+	e.GET("/health", func(c echo.Context) error {
+		return c.JSON(
+			http.StatusOK,
+			map[string]string{
+				"time":         time.Now().String(),
+				"message":      "Hello World!",
+				"service_name": "",
+			},
+		)
 	})
 }

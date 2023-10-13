@@ -1,41 +1,45 @@
 package product
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/ninosistemas10/ecommerce/domain/product"
+	"github.com/labstack/echo/v4"
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/middle"
+
+	"github.com/ninosistemas10/ecommerce/domain/product"
 	productStorage "github.com/ninosistemas10/ecommerce/infrastructure/postgres/product"
 )
 
-
-func NewRouter(app *fiber.App, dbPool *pgxpool.Pool) {
+// NewRouter returns a router to handle model.Product requests
+func NewRouter(e *echo.Echo, dbPool *pgxpool.Pool) {
 	h := buildHandler(dbPool)
 
 	authMiddleware := middle.New()
 
-	adminRoutes(app, h, authMiddleware.IsValid, authMiddleware.IsAdmin)
-	publicRoutes(app, h)
+	adminRoutes(e, h, authMiddleware.IsValid, authMiddleware.IsAdmin)
+	publicRoutes(e, h)
 }
 
 func buildHandler(dbPool *pgxpool.Pool) handler {
 	useCase := product.New(productStorage.New(dbPool))
-	return newhandler(useCase)
+	return newHandler(useCase)
 }
 
-func adminRoutes(app *fiber.App, h handler, middlewares ...func(*fiber.Ctx) error) {
-	route := app.Group("/api/v1/admin/products", middlewares...)
+// adminRoutes handle the routes that requires a token and permissions to certain users
+func adminRoutes(e *echo.Echo, h handler, middlewares ...echo.MiddlewareFunc) {
+	route := e.Group("/api/v1/admin/products", middlewares...)
 
-	route.Post("", h.Create)
-	route.Put("/:id", h.Update)
-	route.Delete("/:id", h.Delete)
-	route.Get("", h.GetAll)
-	route.Get("/:id", h.GetByID)
+	route.POST("", h.Create)
+	route.PUT("/:id", h.Update)
+	route.DELETE("/:id", h.Delete)
+
+	route.GET("", h.GetAll)
+	route.GET("/:id", h.GetByID)
 }
 
-func publicRoutes(app *fiber.App, h handler) {
-	route := app.Group("/api/v1/public/products")
+// publicRoutes handle the routes that not requires a validation of any kind to be use
+func publicRoutes(e *echo.Echo, h handler) {
+	route := e.Group("/api/v1/public/products")
 
-	route.Get("", h.GetAll)
-	route.Get("/:id", h.GetByID)
+	route.GET("", h.GetAll)
+	route.GET("/:id", h.GetByID)
 }

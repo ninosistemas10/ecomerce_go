@@ -1,8 +1,8 @@
 package login
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/labstack/echo/v4"
 
 	"github.com/ninosistemas10/ecommerce/domain/login"
 	"github.com/ninosistemas10/ecommerce/domain/user"
@@ -11,12 +11,12 @@ import (
 )
 
 // NewRouter returns a router to handle model.Login requests
-func NewRouter(app *fiber.App, dbPool *pgxpool.Pool) {
+func NewRouter(e *echo.Echo, dbPool *pgxpool.Pool) {
 	h := buildHandler(dbPool)
 
 	// build middlewares to validate permissions on the routes
 
-	publicRoutes(app, h)
+	publicRoutes(e, h)
 }
 
 func buildHandler(dbPool *pgxpool.Pool) handler {
@@ -25,10 +25,9 @@ func buildHandler(dbPool *pgxpool.Pool) handler {
 	return newHandler(useCase)
 }
 
-
 // publicRoutes handle the routes that not requires a validation of any kind to be use
-func publicRoutes(app *fiber.App, h handler) {
-	route := app.Group("/api/v1/public/login")
+func publicRoutes(e *echo.Echo, h handler) {
+	route := e.Group("/api/v1/public/login")
 
-	route.Post("", h.Login)
+	route.POST("", h.Login)
 }

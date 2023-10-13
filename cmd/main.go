@@ -19,16 +19,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	app := newHTTP(response.HTTPErrorHandler)
-
+	e := newHTTP(response.HTTPErrorHandler)
 
 	dbPool, err := newDBConnection()
 	if err != nil {
 		log.Fatal(err)
 	}
-	handler.InitRoutes(app, dbPool)
 
-	err = app.Listen(":" + os.Getenv("SERVER_PORT"))
+	handler.InitRoutes(e, dbPool)
+
+	err = e.Start(":" + os.Getenv("SERVER_PORT"))
 	if err != nil {
 		log.Fatal(err)
 	}

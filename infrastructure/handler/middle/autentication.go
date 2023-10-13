@@ -3,11 +3,12 @@ package middle
 import (
 	"errors"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/gofiber/fiber/v2"
+	"github.com/labstack/echo/v4"
 
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/response"
 	"github.com/ninosistemas10/ecommerce/model"
@@ -17,50 +18,45 @@ type AuthMiddleware struct {
 	responser response.API
 }
 
-// New crea una nueva instancia de AuthMiddleware
 func New() AuthMiddleware {
 	return AuthMiddleware{}
 }
 
-// IsValid es un middleware para validar el token de autenticación
-func (am AuthMiddleware) IsValid(ctx *fiber.Ctx) error {
-	// Obtener el token del encabezado de la solicitud
-	token, err := getTokenFromRequest(ctx)
-	if err != nil {
-		return am.responser.BindFailed(err)
+func (am AuthMiddleware) IsValid(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		token, err := getTokenFromRequest(c.Request())
+		if err != nil {
+			return am.responser.BindFailed(err)
+		}
+
+		isValid, claims := am.validate(token)
+		if !isValid {
+			err = errors.New("the token is not valid")
+			return am.responser.BindFailed(err)
+		}
+
+		c.Set("userID", claims.UserID)
+		c.Set("email", claims.Email)
+		c.Set("isAdmin", claims.IsAdmin)
+
+		return next(c)
 	}
-
-	// Validar el token
-	isValid, claims := am.validate(token)
-	if !isValid {
-		err := errors.New("el token no es válido")
-		return am.responser.BindFailed(err)
-	}
-
-	// Establecer datos del usuario en el contexto de Fiber
-	ctx.Locals("userID", claims.UserID)
-	ctx.Locals("email", claims.Email)
-	ctx.Locals("isAdmin", claims.IsAdmin)
-
-	return ctx.Next()
 }
 
-// IsAdmin es un middleware para verificar si el usuario es un administrador
-func (am AuthMiddleware) IsAdmin(ctx *fiber.Ctx) error {
-	// Verificar si el usuario es un administrador
-	isAdmin, ok := ctx.Locals("isAdmin").(bool)
-	if !isAdmin || !ok {
-		err := errors.New("no eres administrador")
-		return am.responser.BindFailed(err)
-	}
+func (am AuthMiddleware) IsAdmin(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		isAdmin, ok := c.Get("isAdmin").(bool)
+		if !isAdmin || !ok {
+			err := errors.New("you are not admin")
+			return am.responser.BindFailed(err)
+		}
 
-	return ctx.Next()
+		return next(c)
+	}
 }
 
-// validate valida un token JWT
 func (am AuthMiddleware) validate(token string) (bool, model.JWTCustomClaims) {
-	claims := &model.JWTCustomClaims{}
-	parsedToken, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (interface{}, error) {
+	claims, err := jwt.ParseWithClaims(token, &model.JWTCustomClaims{}, func(t *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
 	})
 	if err != nil {
@@ -70,23 +66,23 @@ func (am AuthMiddleware) validate(token string) (bool, model.JWTCustomClaims) {
 		return false, model.JWTCustomClaims{}
 	}
 
-	if !parsedToken.Valid {
-		log.Println("Token no válido")
+	data, ok := claims.Claims.(*model.JWTCustomClaims)
+	if !ok {
+		log.Println("is not a jwtcustomclaims")
 		return false, model.JWTCustomClaims{}
 	}
 
-	return true, *claims
+	return true, *data
 }
 
-// getTokenFromRequest obtiene el token del encabezado de la solicitud
-func getTokenFromRequest(ctx *fiber.Ctx) (string, error) {
-	data := ctx.Get("Authorization")
+func getTokenFromRequest(r *http.Request) (string, error) {
+	data := r.Header.Get("Authorization")
 	if data == "" {
-		return "", errors.New("el encabezado de autorización está vacío")
+		return "", errors.New("el header de autorización está vacío")
 	}
 
 	if strings.HasPrefix(data, "Bearer") {
-		return strings.TrimSpace(data[7:]), nil
+		return data[7:], nil
 	}
 
 	return data, nil

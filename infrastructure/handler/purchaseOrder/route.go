@@ -1,35 +1,31 @@
 package purchaseorder
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/jackc/pgx/v5/pgxpool"
-	purchaseorder "github.com/ninosistemas10/ecommerce/domain/purchaseOrder"
+	"github.com/ninosistemas10/ecommerce/domain/purchaseorder"
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/middle"
 	purchaseorderStorage "github.com/ninosistemas10/ecommerce/infrastructure/postgres/purchaseorder"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/labstack/echo/v4"
 )
 
-func NewRouter(app *fiber.App, dbPool *pgxpool.Pool) {
+// NewRouter returns a router to handle model.PurchaseOrder requests
+func NewRouter(e *echo.Echo, dbPool *pgxpool.Pool) {
 	h := buildHandler(dbPool)
 
 	authMiddleware := middle.New()
-	privateRoutes(app, h ,authMiddleware.IsValid)
+
+	privateRoutes(e, h, authMiddleware.IsValid)
 }
 
 func buildHandler(dbPool *pgxpool.Pool) handler {
 	useCase := purchaseorder.New(purchaseorderStorage.New(dbPool))
-	return NewHandler(useCase)
-
+	return newHandler(useCase)
 }
 
-// privateRoutes handle the routes that require a token
-func privateRoutes(app *fiber.App, h handler, middlewares ...func(*fiber.Ctx) error) {
-	route := app.Group("/api/v1/private/purchase-orders", middlewares...)
+// privateRoutes handle the routes that requires a token
+func privateRoutes(e *echo.Echo, h handler, middlewares ...echo.MiddlewareFunc) {
+	route := e.Group("/api/v1/private/purchase-orders", middlewares...)
 
-	route.Post("", h.Create)
+	route.POST("", h.Create)
 }
-
-
-
-
-
-

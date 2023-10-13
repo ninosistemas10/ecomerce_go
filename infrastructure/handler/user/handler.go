@@ -3,11 +3,11 @@ package user
 import (
 	"errors"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+
 	"github.com/ninosistemas10/ecommerce/domain/user"
 	"github.com/ninosistemas10/ecommerce/infrastructure/handler/response"
-
 	"github.com/ninosistemas10/ecommerce/model"
 )
 
@@ -20,39 +20,40 @@ func newHandler(uc user.UseCase) handler {
 	return handler{useCase: uc}
 }
 
-func (h handler) Create(c *fiber.Ctx) error {
+func (h handler) Create(c echo.Context) error {
 	m := model.User{}
-	if err := c.BodyParser(&m); err != nil {
+
+	if err := c.Bind(&m); err != nil {
 		return h.responser.BindFailed(err)
 	}
+
 	if err := h.useCase.Create(&m); err != nil {
 		return h.responser.Error(c, "useCase.Create()", err)
 	}
 
-	status, response := h.responser.Created(m)
-	return c.Status(status).JSON(response)
+	return c.JSON(h.responser.Created(m))
 }
 
-func (h handler) MySelf(c *fiber.Ctx) error {
-	ID, ok := c.Locals("userID").(uuid.UUID)
+// MySelf returns the data from my profile
+func (h handler) MySelf(c echo.Context) error {
+	ID, ok := c.Get("userID").(uuid.UUID)
 	if !ok {
-		return h.responser.Error(c, "c.Locals(userID)", errors.New("Couldn't parese the ID"))
+		return h.responser.Error(c, "c.Get().(uuid.UUID)", errors.New("couldn´t parse the ID"))
 	}
 
 	u, err := h.useCase.GetByID(ID)
 	if err != nil {
-		return h.responser.Error(c, "useCase.GetByID", err)
+		return h.responser.Error(c, "useCase.GetWhere()", err)
 	}
-	status, response := h.responser.OK(u)
-	return c.Status(status).JSON(response)
+
+	return c.JSON(h.responser.OK(u))
 }
 
-func (h handler) GetAll(c *fiber.Ctx) error {
+func (h handler) GetAll(c echo.Context) error {
 	users, err := h.useCase.GetAll()
 	if err != nil {
 		return h.responser.Error(c, "useCase.GetAll()", err)
 	}
 
-	status, response := h.responser.OK(users)
-	return c.Status(status).JSON(response)
+	return c.JSON(h.responser.OK(users))
 }

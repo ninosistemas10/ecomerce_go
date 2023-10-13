@@ -2,7 +2,7 @@ package model
 
 import "fmt"
 
-type ErrorE struct {
+type Error struct {
 	Code       string
 	Err        error
 	Who        string
@@ -12,12 +12,12 @@ type ErrorE struct {
 	UserID     string
 }
 
-func NewError() ErrorE {
-	return ErrorE{}
+func NewError() Error {
+	return Error{}
 }
 
-func (e *ErrorE) Error() string {
-	return fmt.Sprintf("Code: %s, Err: %v, Who: %s, Status: %d, Data: %v, UserID:%s",
+func (e *Error) Error() string {
+	return fmt.Sprintf("Code: %s, Err: %v, Who: %s, Status: %d, Data: %v, UserID: %s",
 		e.Code,
 		e.Err,
 		e.Who,
@@ -27,14 +27,14 @@ func (e *ErrorE) Error() string {
 	)
 }
 
-func (e *ErrorE) HasCode() bool {
+func (e *Error) HasCode() bool {
 	return e.Code != ""
 }
 
-func (e *ErrorE) HasStatusHttp() bool {
+func (e *Error) HasStatusHTTP() bool {
 	return e.StatusHTTP > 0
 }
 
-func (e *ErrorE) HasData() bool {
+func (e *Error) HasData() bool {
 	return e.Data != nil
 }

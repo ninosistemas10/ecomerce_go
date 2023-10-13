@@ -5,34 +5,75 @@
 │   ├── fiber.go
 │   └── main.go
 ├── domain
+│   ├── invoice
+│   │   ├── invoice.go
+│   │   └── usercase.go
+│   ├── login
+│   │   ├── login.go
+│   │   └── usecase.go
+│   ├── product
+│   │   ├── product.go
+│   │   └── usecase.go
+│   ├── purchaseOrder
+│   │   ├── purchaseOrder.go
+│   │   └── useCase.go
 │   └── user
 │       ├── usecase.go
 │       └── user.go
+├── ecommerce
 ├── go.mod
 ├── go.sum
 ├── infrastructure
 │   ├── handler
+│   │   ├── login
+│   │   │   ├── handler.go
+│   │   │   └── route.go
 │   │   ├── middle
 │   │   │   └── autentication.go
+│   │   ├── product
+│   │   │   ├── handler.go
+│   │   │   └── route.go
+│   │   ├── purchaseOrder
+│   │   │   ├── handler.go
+│   │   │   └── route.go
 │   │   ├── response
+│   │   │   ├── handleerror.go
 │   │   │   └── message.go
 │   │   ├── routes.go
 │   │   └── user
 │   │       ├── handler.go
 │   │       └── route.go
 │   ├── postgres
+│   │   ├── invoice
+│   │   │   ├── invoice.go
+│   │   │   └── invoiceDetail.go
 │   │   ├── postgresql.go
+│   │   ├── product
+│   │   │   └── product.go
+│   │   ├── purchaseOrder
+│   │   │   └── purchaseOrder.go
 │   │   └── user
 │   │       └── user.go
 │   └── response
 ├── lista.txt
-├── main.go
 ├── model
 │   ├── error.go
+│   ├── errorCodes.go
+│   ├── invoice.go
+│   ├── invoiceDetail.go
+│   ├── invoiceReport.go
 │   ├── jwtcustomclaims.go
+│   ├── login.go
 │   ├── messageresponse.go
+│   ├── product.go
+│   ├── purchaseOrder.go
 │   └── user.go
 └── sqlmigrations
+    ├── createInvoiceDetails.sql
+    ├── createInvoices.sql
+    ├── createProducts.sql
+    ├── createPurchaseOrders.sql
+    ├── createUsers.sql
+    └── tableAll.sql
 
-14 directories, 21 files
-tree > lista.txt
+24 directories, 53 files
